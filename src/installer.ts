@@ -23,7 +23,7 @@ export async function run(version: string): Promise<string> {
 async function install(version: string): Promise<string> {
   const plat = getPlatform()
   const arch = getArch()
-  const zip = plat === 'windows' || plat === 'macos'
+  const zip = plat === 'windows'
   const ext = zip ? 'zip' : 'tar.gz'
 
   const baseURL = 'https://github.com/hetznercloud/cli/releases/download'
@@ -80,7 +80,6 @@ async function extractArchive(
 function getPlatform(): string {
   const p = os.platform()
   const mappings = new Map<string, string>([
-    ['darwin', 'macos'],
     ['win32', 'windows']
   ])
   return mappings.get(p) || p

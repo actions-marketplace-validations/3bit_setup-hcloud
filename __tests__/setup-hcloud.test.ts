@@ -220,7 +220,7 @@ describe('setup-hcloud', () => {
     await main.run()
 
     expect(resultFn()).toEqual(
-      'https://github.com/hetznercloud/cli/releases/download/v99.99.99/hcloud-macos-amd64.zip'
+      'https://github.com/hetznercloud/cli/releases/download/v99.99.99/hcloud-darwin-amd64.tar.gz'
     )
   })
 
