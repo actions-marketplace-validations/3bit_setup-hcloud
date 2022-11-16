@@ -24,11 +24,9 @@ async function install(version: string): Promise<string> {
   const arch = getArch()
   let plat = getPlatform()
   // archive name for MacOS changed with v1.30
-  if (plat === 'darwin' && version.substring(0,4) <= '1.29') plat = 'macos'
+  if (plat === 'darwin' && version.substring(0, 4) <= '1.29') plat = 'macos'
   const zip = plat === 'windows' || plat === 'macos'
   const ext = zip ? 'zip' : 'tar.gz'
-
-
 
   const baseURL = 'https://github.com/hetznercloud/cli/releases/download'
   const url = `${baseURL}/v${version}/hcloud-${plat}-${arch}.${ext}`
@@ -83,9 +81,7 @@ async function extractArchive(
 
 function getPlatform(): string {
   const p = os.platform()
-  const mappings = new Map<string, string>([
-    ['win32', 'windows']
-  ])
+  const mappings = new Map<string, string>([['win32', 'windows']])
   return mappings.get(p) || p
 }
 
