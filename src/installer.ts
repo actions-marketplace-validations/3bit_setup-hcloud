@@ -13,7 +13,7 @@ export async function run(version: string): Promise<string> {
   try {
     toolPath = await install(version)
   } catch (err) {
-    core.debug(err.stack)
+    if (err instanceof Error && err.stack) core.debug(err.stack)
     throw new Error(`Failed to install version '${version}': ${err}`)
   }
 
@@ -57,7 +57,7 @@ async function install(version: string): Promise<string> {
       core.info(
         `Received HTTP status code ${err.httpStatusCode}.  This usually indicates the rate limit has been exceeded`
       )
-    } else {
+    } else if (err instanceof Error) {
       core.info(err.message)
     }
     throw err

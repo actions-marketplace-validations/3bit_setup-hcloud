@@ -1,23 +1,18 @@
 import * as core from '@actions/core'
 import * as installer from './installer'
-import request from 'request'
 import path from 'path'
+import axios from 'axios'
 
 async function getLatestVersion(): Promise<string> {
-  const url = `https://github.com/hetznercloud/cli/releases/latest`
+  const url = 'https://github.com/hetznercloud/cli/releases/latest'
 
-  const latestReleaseUrl = await new Promise<string>((resolve, reject) => {
-    request.get(url, (error: Error, response: request.Response) => {
-      if (error) reject(error)
-      resolve(response.request.uri.href)
-    })
-  })
-
+  const response = await axios.get(url)
+  const req = response.request
+  const latestReleaseUrl = `${req.protocol}://${req.hostname}${req.pathname}`
   const latestVersion = removeLeadingV(path.basename(latestReleaseUrl))
   if (!latestVersion || latestVersion === 'latest') {
     throw new Error('Unable to determine latest version.')
   }
-
   core.info(`Latest version found: ${latestVersion}`)
   return latestVersion
 }
@@ -40,6 +35,7 @@ export async function run(): Promise<void> {
     core.addPath(installDir)
     core.info(`Successfully setup hcloud version ${version}`)
   } catch (error) {
-    core.setFailed(error.message)
+    if (error instanceof Error) core.setFailed(error.message)
+    else throw error
   }
 }

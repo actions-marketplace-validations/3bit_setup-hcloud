@@ -18,10 +18,10 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: Set Node.js 12
+    - name: Set Node.js 16
       uses: actions/setup-node@v2.1.4
       with:
-        node-version: 12
+        node-version: 16
 
     - run: npm ci
 

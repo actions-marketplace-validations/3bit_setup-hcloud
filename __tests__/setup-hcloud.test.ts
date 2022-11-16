@@ -3,8 +3,8 @@ import * as core from '@actions/core'
 import * as tc from '@actions/tool-cache'
 import osm from 'os'
 import path from 'path'
+import axios from 'axios'
 import * as main from '../src/main'
-import request from 'request'
 
 describe('setup-hcloud', () => {
   let inputs = {} as any
@@ -47,15 +47,24 @@ describe('setup-hcloud', () => {
     logSpy.mockImplementation(() => {})
 
     // request
-    reqSpy = jest.spyOn(request, 'get')
-    reqSpy.mockImplementation((uri: string, callback?: any) =>
-      callback(null, {
+    reqSpy = jest.spyOn(axios, 'get')
+    setReqSpyRequestUrl(
+      'https://github.com/hetznercloud/cli/releases/v77.77.77'
+    )
+  })
+
+  function setReqSpyRequestUrl(url: string) {
+    const _url = new URL(url)
+    reqSpy.mockImplementation(() =>
+      Promise.resolve({
         request: {
-          uri: {href: 'https://github.com/hetznercloud/cli/releases/v77.77.77'}
+          pathname: _url.pathname,
+          protocol: _url.protocol,
+          hostname: _url.hostname
         }
       })
     )
-  })
+  }
 
   afterEach(() => {
     jest.resetAllMocks()
@@ -94,13 +103,7 @@ describe('setup-hcloud', () => {
   })
 
   it('reports error if version cannot be determined - empty href', async () => {
-    reqSpy.mockImplementation((uri: string, callback?: any) =>
-      callback(null, {
-        request: {
-          uri: {href: ''}
-        }
-      })
-    )
+    setReqSpyRequestUrl('https://github.com/hetznercloud/cli/releases/latest')
     await main.run()
 
     expect(cnSpy).toHaveBeenCalledWith(
@@ -109,13 +112,7 @@ describe('setup-hcloud', () => {
   })
 
   it('reports error if version cannot be determined - no redirect', async () => {
-    reqSpy.mockImplementation((uri: string, callback?: any) =>
-      callback(null, {
-        request: {
-          uri: {href: 'https://github.com/hetznercloud/cli/releases/latest'}
-        }
-      })
-    )
+    setReqSpyRequestUrl('https://github.com/hetznercloud/cli/releases/latest')
     await main.run()
 
     expect(cnSpy).toHaveBeenCalledWith(
@@ -237,7 +234,11 @@ describe('setup-hcloud', () => {
     )
   })
 
-  function setupUrlTest(platform: string, arch: string, version:string='99.99.99'): () => string {
+  function setupUrlTest(
+    platform: string,
+    arch: string,
+    version: string = '99.99.99'
+  ): () => string {
     os.platform = platform
     os.arch = arch
     inputs['hcloud-version'] = version
