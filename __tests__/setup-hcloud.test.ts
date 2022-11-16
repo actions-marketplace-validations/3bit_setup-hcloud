@@ -224,10 +224,23 @@ describe('setup-hcloud', () => {
     )
   })
 
-  function setupUrlTest(platform: string, arch: string): () => string {
+  it('correct download url for darwin-x64 pre v1.30', async () => {
+    const platform = 'darwin'
+    const arch = 'x64'
+    const version = '1.29'
+
+    const resultFn = setupUrlTest(platform, arch, version)
+    await main.run()
+
+    expect(resultFn()).toEqual(
+      'https://github.com/hetznercloud/cli/releases/download/v1.29/hcloud-macos-amd64.zip'
+    )
+  })
+
+  function setupUrlTest(platform: string, arch: string, version:string='99.99.99'): () => string {
     os.platform = platform
     os.arch = arch
-    inputs['hcloud-version'] = '99.99.99'
+    inputs['hcloud-version'] = version
 
     let downloadUrl = ''
     dlSpy.mockImplementation(url => {
