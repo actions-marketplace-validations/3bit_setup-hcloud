@@ -19,7 +19,7 @@ describe('setup-hcloud', () => {
   let dlSpy: jest.SpyInstance
   let exSpy: jest.SpyInstance
   let cacheSpy: jest.SpyInstance
-  let reqSpy: jest.SpyInstance
+  let reqSpy: jest.SpyInstance | null
 
   beforeEach(() => {
     // @actions/core
@@ -45,28 +45,29 @@ describe('setup-hcloud', () => {
     cnSpy.mockImplementation(() => {})
     logSpy = jest.spyOn(core, 'info')
     logSpy.mockImplementation(() => {})
-
-    // request
-    reqSpy = jest.spyOn(axios, 'get')
-    setReqSpyRequestUrl(
-      'https://github.com/hetznercloud/cli/releases/v77.77.77'
-    )
   })
 
-  function setReqSpyRequestUrl(url: string) {
+  function mockAxiosRequest(
+    url: string = 'https://github.com/hetznercloud/cli/releases/v77.77.77'
+  ) {
     const _url = new URL(url)
+    reqSpy = jest.spyOn(axios, 'get')
     reqSpy.mockImplementation(() =>
       Promise.resolve({
         request: {
-          pathname: _url.pathname,
+          path: _url.pathname,
           protocol: _url.protocol,
-          hostname: _url.hostname
+          host: _url.hostname
         }
       })
     )
   }
 
   afterEach(() => {
+    if (reqSpy) {
+      reqSpy.mockClear()
+      reqSpy = null
+    }
     jest.resetAllMocks()
     jest.clearAllMocks()
   })
@@ -83,6 +84,7 @@ describe('setup-hcloud', () => {
   })
 
   it('get version - input=latest', async () => {
+    mockAxiosRequest()
     inputs['hcloud-version'] = 'latest'
     await main.run()
 
@@ -90,6 +92,7 @@ describe('setup-hcloud', () => {
   })
 
   it('get version - input=', async () => {
+    mockAxiosRequest()
     inputs['hcloud-version'] = ''
     await main.run()
 
@@ -97,13 +100,14 @@ describe('setup-hcloud', () => {
   })
 
   it('get version - no input', async () => {
+    mockAxiosRequest()
     await main.run()
 
     expect(logSpy).toHaveBeenCalledWith('Latest version found: 77.77.77')
   })
 
   it('reports error if version cannot be determined - empty href', async () => {
-    setReqSpyRequestUrl('https://github.com/hetznercloud/cli/releases/latest')
+    mockAxiosRequest('https://github.com/hetznercloud/cli/releases/latest')
     await main.run()
 
     expect(cnSpy).toHaveBeenCalledWith(
@@ -112,7 +116,7 @@ describe('setup-hcloud', () => {
   })
 
   it('reports error if version cannot be determined - no redirect', async () => {
-    setReqSpyRequestUrl('https://github.com/hetznercloud/cli/releases/latest')
+    mockAxiosRequest('https://github.com/hetznercloud/cli/releases/latest')
     await main.run()
 
     expect(cnSpy).toHaveBeenCalledWith(

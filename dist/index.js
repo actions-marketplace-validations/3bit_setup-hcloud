@@ -173,7 +173,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.run = void 0;
+exports.run = exports.getLatestVersion = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const installer = __importStar(__nccwpck_require__(1480));
 const path_1 = __importDefault(__nccwpck_require__(1017));
@@ -183,7 +183,7 @@ function getLatestVersion() {
         const url = 'https://github.com/hetznercloud/cli/releases/latest';
         const response = yield axios_1.default.get(url);
         const req = response.request;
-        const latestReleaseUrl = `${req.protocol}://${req.hostname}${req.pathname}`;
+        const latestReleaseUrl = `${req.protocol}//${req.host}${req.path}`;
         const latestVersion = removeLeadingV(path_1.default.basename(latestReleaseUrl));
         if (!latestVersion || latestVersion === 'latest') {
             throw new Error('Unable to determine latest version.');
@@ -192,6 +192,7 @@ function getLatestVersion() {
         return latestVersion;
     });
 }
+exports.getLatestVersion = getLatestVersion;
 function removeLeadingV(version) {
     return version.startsWith('v') ? version.substring(1) : version;
 }

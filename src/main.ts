@@ -3,12 +3,12 @@ import * as installer from './installer'
 import path from 'path'
 import axios from 'axios'
 
-async function getLatestVersion(): Promise<string> {
+export async function getLatestVersion(): Promise<string> {
   const url = 'https://github.com/hetznercloud/cli/releases/latest'
 
   const response = await axios.get(url)
   const req = response.request
-  const latestReleaseUrl = `${req.protocol}://${req.hostname}${req.pathname}`
+  const latestReleaseUrl = `${req.protocol}//${req.host}${req.path}`
   const latestVersion = removeLeadingV(path.basename(latestReleaseUrl))
   if (!latestVersion || latestVersion === 'latest') {
     throw new Error('Unable to determine latest version.')
