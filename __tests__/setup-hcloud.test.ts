@@ -75,6 +75,7 @@ describe('setup-hcloud', () => {
   afterAll(async () => {}, 100000)
 
   it('find hcloud in cache', async () => {
+    mockAxiosRequest()
     inputs['hcloud-version'] = '99.99.99'
     const toolPath = path.normalize('/cache/hcloud/99.99.99')
     findSpy.mockImplementation(() => toolPath)
@@ -125,6 +126,7 @@ describe('setup-hcloud', () => {
   })
 
   it('download version not in cache', async () => {
+    mockAxiosRequest()
     os.platform = 'linux'
     os.arch = 'x64'
     inputs['hcloud-version'] = '99.99.99'
@@ -139,6 +141,7 @@ describe('setup-hcloud', () => {
   })
 
   it('handles unhandled error and reports error', async () => {
+    mockAxiosRequest()
     const errMsg = 'unhandled error message'
     inputs['hcloud-version'] = '99.99.99'
     findSpy.mockImplementation(() => {
@@ -150,6 +153,7 @@ describe('setup-hcloud', () => {
   })
 
   it('does not find a version that does not exist', async () => {
+    mockAxiosRequest()
     os.platform = 'linux'
     os.arch = 'x64'
     inputs['hcloud-version'] = '99.99.99'
@@ -162,6 +166,7 @@ describe('setup-hcloud', () => {
   })
 
   it('reports a failed download', async () => {
+    mockAxiosRequest()
     const errMsg = 'unhandled download message'
     os.platform = 'linux'
     os.arch = 'x64'
@@ -178,6 +183,7 @@ describe('setup-hcloud', () => {
   })
 
   it('correct download url for win32-x64', async () => {
+    mockAxiosRequest()
     const platform = 'win32'
     const arch = 'x64'
 
@@ -190,6 +196,7 @@ describe('setup-hcloud', () => {
   })
 
   it('correct download url for win32-x32', async () => {
+    mockAxiosRequest()
     const platform = 'win32'
     const arch = 'x32'
 
@@ -202,6 +209,7 @@ describe('setup-hcloud', () => {
   })
 
   it('correct download url for linux-x64', async () => {
+    mockAxiosRequest()
     const platform = 'linux'
     const arch = 'x64'
 
@@ -214,6 +222,7 @@ describe('setup-hcloud', () => {
   })
 
   it('correct download url for darwin-x64', async () => {
+    mockAxiosRequest()
     const platform = 'darwin'
     const arch = 'x64'
 
@@ -226,6 +235,7 @@ describe('setup-hcloud', () => {
   })
 
   it('correct download url for darwin-x64 pre v1.30', async () => {
+    mockAxiosRequest()
     const platform = 'darwin'
     const arch = 'x64'
     const version = '1.29'
