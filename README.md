@@ -17,7 +17,7 @@ The environment variable `HCLOUD_TOKEN` is required for hcloud to work properly.
 ```yaml
 steps:
 - uses: actions/checkout@main
-- uses: 3bit/setup-hcloud@v1
+- uses: 3bit/setup-hcloud@v2
 - run: hcloud version
   env:
     HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
@@ -27,7 +27,7 @@ steps:
 ```yaml
 steps:
 - uses: actions/checkout@main
-- uses: 3bit/setup-hcloud@v1
+- uses: 3bit/setup-hcloud@v2
   with:
     hcloud-version: '1.19.1'
 - run: hcloud version
