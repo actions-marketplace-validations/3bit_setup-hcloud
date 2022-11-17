@@ -24,7 +24,7 @@ async function install(version: string): Promise<string> {
   const arch = getArch()
   let plat = getPlatform()
   // archive name for MacOS changed with v1.30
-  if (plat === 'darwin' && version.substring(0, 4) <= '1.29') plat = 'macos'
+  if (plat === 'darwin' && version.substring(0, 6) <= '1.29.4') plat = 'macos'
   const zip = plat === 'windows' || plat === 'macos'
   const ext = zip ? 'zip' : 'tar.gz'
 

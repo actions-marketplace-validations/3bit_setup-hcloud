@@ -16,12 +16,14 @@
     "package": "ncc build --source-map --license licenses.txt",
     "test": "jest",
     "all": "npm run build && npm run format && npm run lint && npm run package && npm test",
+    "pre-commit": "npm run build && npm run format && npm run lint && npm run package && npm test",
+    "pre-push": "npm run format-check && npm test",
     "prepare": "husky install"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run format",
-      "pre-push": "npm run format-check && npm test"
+      "pre-commit": "npm run pre-commit",
+      "pre-push": "npm run pre-push"
     }
   },
   "repository": {
