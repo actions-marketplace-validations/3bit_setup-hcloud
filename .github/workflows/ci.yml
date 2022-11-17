@@ -7,32 +7,30 @@ defaults:
   run:
     shell: bash
 
+permissions:
+  contents: read
+
 jobs:
   build:
-    runs-on: ${{ matrix.operating-system }}
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        operating-system: [ubuntu-latest, windows-latest, macOS-latest]
+        node-version: [14.x, 16.x, 18.x]
     steps:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: Set Node.js 16
-      uses: actions/setup-node@v2.1.4
+    - name: Set Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
       with:
-        node-version: 16
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
 
     - run: npm ci
-
     - run: npm run lint
-      if: runner.os != 'Windows'
-
     - run: npm run build
-
     - run: npm run format-check
-      if: runner.os != 'Windows'
-
     - run: npm test
 
     - name: Verify no unstaged changes
@@ -46,11 +44,12 @@ jobs:
 
   test:
     runs-on: ${{ matrix.operating-system }}
+    needs: build
     strategy:
       fail-fast: false
       matrix:
         operating-system: [ubuntu-latest, windows-latest, macOS-latest]
-        hcloud-version: ['', 'latest', '1.20.0']
+        hcloud-version: ['', 'latest', '1.20.0', '1.29.0', '1.29.4']
 
     steps:
       - uses: actions/checkout@v2
@@ -73,6 +72,16 @@ jobs:
         if: ${{ matrix.hcloud-version == '1.20.0' }}
         run: |
           echo "expected_version=1.20.0" >> $GITHUB_ENV
+
+      - name: Set expected version to 1.29.0
+        if: ${{ matrix.hcloud-version == '1.29.0' }}
+        run: |
+          echo "expected_version=1.29.0" >> $GITHUB_ENV
+
+      - name: Set expected version to 1.29.4
+        if: ${{ matrix.hcloud-version == '1.29.4' }}
+        run: |
+          echo "expected_version=1.29.4" >> $GITHUB_ENV
 
       - name: Check hcloud version matches
         run: |
